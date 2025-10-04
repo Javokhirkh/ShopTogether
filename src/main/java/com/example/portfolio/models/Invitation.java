@@ -29,6 +29,7 @@ public class Invitation {
     private InvitationStatus status;
 
     private LocalDateTime sentAt;
+    private LocalDateTime respondedAt;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id")

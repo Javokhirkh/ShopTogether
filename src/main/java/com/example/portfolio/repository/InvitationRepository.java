@@ -3,5 +3,10 @@ package com.example.portfolio.repository;
 import com.example.portfolio.models.Invitation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface InvitationRepository extends JpaRepository<Invitation,Long> {
+import java.util.Optional;
+
+public interface
+InvitationRepository extends JpaRepository<Invitation,Long> {
+    Optional<Invitation> findByRecipientEmail(String email);
+    Optional<Invitation> findByFamilyId(Long familyId);
 }

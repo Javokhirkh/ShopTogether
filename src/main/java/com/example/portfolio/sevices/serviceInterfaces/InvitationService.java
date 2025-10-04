@@ -5,6 +5,11 @@ import com.example.portfolio.DTOs.invitation.InvitationResponse;
 
 public interface InvitationService {
     InvitationResponse getInvitation(Long id);
+
+    InvitationResponse getInvitationByEmail(String email);
+
+    InvitationResponse getInvitationByFamilyId(Long familyId);
+
     void deleteInvitation(Long id);
     InvitationResponse acceptInvitation(Long id);
     InvitationResponse declineInvitation(Long id);
