@@ -3,6 +3,7 @@ package com.example.portfolio.DTOs.shoppingList;
 import com.example.portfolio.models.Family;
 import com.example.portfolio.models.Item;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 public class ShoppingListResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

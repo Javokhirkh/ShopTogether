@@ -23,7 +23,7 @@ public class Item {
 
     private int quantity;
 
-    private boolean bought = false;
+    private boolean isBought = false;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "shopping_list_id")

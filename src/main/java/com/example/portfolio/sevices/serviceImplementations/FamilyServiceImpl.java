@@ -19,34 +19,35 @@ public class FamilyServiceImpl implements FamilyService {
         this.repository = repository;
     }
     @Override
-    public FamilyResponse createFamily(FamilyCreateRequest familyRequest) {
+    public FamilyResponse create(FamilyCreateRequest familyRequest) {
         var family = mapDtoToEntity(familyRequest);
         var savedFamily = repository.save(family);
         return mapEntityToDto(savedFamily);
     }
 
     @Override
-    public FamilyResponse getFamily(Long id) {
+    public FamilyResponse get(Long id) {
         return repository.findById(id)
                 .map(this::mapEntityToDto)
                 .orElseThrow(()->new ResourceNotFoundException("Family not found with id: " + id));
     }
 
     @Override
-    public FamilyResponse updateFamily(Long id, FamilyCreateRequest familyRequest) {
+    public FamilyResponse update(Long id, FamilyCreateRequest familyRequest) {
         var existingFamily = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Family not found with id: " + id));
 
         if (familyRequest.getName() != null && !familyRequest.getName().isBlank()) {
             existingFamily.setName(familyRequest.getName());
         }
+        existingFamily.setUpdatedAt(LocalDateTime.now());
 
         var updatedFamily = repository.save(existingFamily);
         return mapEntityToDto(updatedFamily);
     }
 
     @Override
-    public void deleteFamily(Long id) {
+    public void delete(Long id) {
         repository.deleteById(id);
     }
 

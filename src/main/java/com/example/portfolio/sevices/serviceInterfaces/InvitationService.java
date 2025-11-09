@@ -4,18 +4,18 @@ import com.example.portfolio.DTOs.invitation.InvitationRequest;
 import com.example.portfolio.DTOs.invitation.InvitationResponse;
 
 public interface InvitationService {
-    InvitationResponse getInvitation(Long id);
+    InvitationResponse get(Long id);
 
-    InvitationResponse getInvitationByEmail(String email);
+    InvitationResponse getByEmail(String email);
 
-    InvitationResponse getInvitationByFamilyId(Long familyId);
+    InvitationResponse getByFamilyId(Long familyId);
 
-    void deleteInvitation(Long id);
-    InvitationResponse acceptInvitation(Long id);
-    InvitationResponse declineInvitation(Long id);
-    InvitationResponse resendInvitation(Long id);
-    InvitationResponse cancelInvitation(Long id);
-    InvitationResponse sendInvitation(InvitationRequest request);
-    InvitationResponse updateInvitation(Long id, InvitationRequest request);
+    void delete(Long id);
+    InvitationResponse accept(Long id);
+    InvitationResponse decline(Long id);
+    InvitationResponse resend(Long id);
+    InvitationResponse cancel(Long id);
+    InvitationResponse send(InvitationRequest request);
+    InvitationResponse update(Long id, InvitationRequest request);
 
 }

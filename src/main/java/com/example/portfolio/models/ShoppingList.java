@@ -22,6 +22,7 @@ public class ShoppingList {
 
     @Column(nullable = false)
     private String name;
+    @Column(name ="family_id")
     private Long familyId;
     private String description;
     private boolean completed;
@@ -32,7 +33,8 @@ public class ShoppingList {
 
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "family_id")
+    @JoinColumn(name = "family_id",insertable = false
+            ,updatable = false)
     private Family family;
 
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)

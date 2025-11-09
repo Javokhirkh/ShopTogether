@@ -18,8 +18,6 @@ public class Invitation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long senderId;
-    private Long familyId;
 
     @Column(nullable = false)
     private String recipientEmail;

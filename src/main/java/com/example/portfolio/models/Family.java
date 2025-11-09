@@ -1,9 +1,7 @@
 package com.example.portfolio.models;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -14,6 +12,8 @@ import java.util.Set;
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Family {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

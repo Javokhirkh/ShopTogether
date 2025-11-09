@@ -3,106 +3,136 @@ package com.example.portfolio.sevices.serviceImplementations;
 import com.example.portfolio.DTOs.invitation.InvitationRequest;
 import com.example.portfolio.DTOs.invitation.InvitationResponse;
 import com.example.portfolio.enums.InvitationStatus;
+import com.example.portfolio.models.Family;
 import com.example.portfolio.models.Invitation;
+import com.example.portfolio.models.User;
+import com.example.portfolio.repository.FamilyRepository;
 import com.example.portfolio.repository.InvitationRepository;
+import com.example.portfolio.repository.UserRepository;
 import com.example.portfolio.sevices.serviceInterfaces.InvitationService;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 
 @Service
 public class InvitationServiceImpl implements InvitationService {
 
-    private final InvitationRepository repository;
+    private final InvitationRepository invitationRepository;
+    private final UserRepository userRepository;
+    private final FamilyRepository familyRepository;
 
-    public InvitationServiceImpl(InvitationRepository repository) {
-        this.repository = repository;
+    public InvitationServiceImpl(InvitationRepository invitationRepository,
+                                 UserRepository userRepository,
+                                 FamilyRepository familyRepository) {
+        this.invitationRepository = invitationRepository;
+        this.userRepository = userRepository;
+        this.familyRepository = familyRepository;
     }
+
     @Override
-    public InvitationResponse getInvitation(Long id) {
-        Invitation invitation=repository.findById(id)
-                .orElseThrow(()->new RuntimeException("Invitation not found with id: " + id));
-        return mapEntityToDto(invitation);
-    }
-    @Override
-    public InvitationResponse getInvitationByEmail(String email) {
-        Invitation invitation=repository.findByRecipientEmail(email)
-                .orElseThrow(()->new RuntimeException("Invitation not found with email: " + email));
-        return mapEntityToDto(invitation);
-    }
-    @Override
-    public InvitationResponse getInvitationByFamilyId(Long familyId) {
-        Invitation invitation=repository.findByFamilyId(familyId)
-                .orElseThrow(()->new RuntimeException("Invitation not found with familyId: " + familyId));
+    public InvitationResponse get(Long id) {
+        Invitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with id: " + id));
         return mapEntityToDto(invitation);
     }
 
     @Override
-    public void deleteInvitation(Long id) {
-        repository.deleteById(id);
+    public InvitationResponse getByEmail(String email) {
+        Invitation invitation = invitationRepository.findByRecipientEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with email: " + email));
+        return mapEntityToDto(invitation);
     }
 
     @Override
-    public InvitationResponse acceptInvitation(Long id) {
-        Invitation invitation=repository.findById(id)
-                .orElseThrow(()->new RuntimeException("Invitation not found with id: " + id));
+    public InvitationResponse getByFamilyId(Long familyId) {
+        Invitation invitation = invitationRepository.findByFamilyId(familyId)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with familyId: " + familyId));
+        return mapEntityToDto(invitation);
+    }
+
+    @Override
+    public void delete(Long id) {
+        invitationRepository.deleteById(id);
+    }
+
+    @Override
+    public InvitationResponse accept(Long id) {
+        Invitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with id: " + id));
         invitation.setStatus(InvitationStatus.ACCEPTED);
-        repository.save(invitation);
-
+        invitation.setRespondedAt(LocalDateTime.now());
+        invitationRepository.save(invitation);
         return mapEntityToDto(invitation);
     }
 
     @Override
-    public InvitationResponse declineInvitation(Long id) {
-        Invitation invitation=repository.findById(id)
-                .orElseThrow(()->new RuntimeException("Invitation not found with id: " + id));
+    public InvitationResponse decline(Long id) {
+        Invitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with id: " + id));
         invitation.setStatus(InvitationStatus.DECLINED);
-        repository.save(invitation);
-
+        invitation.setRespondedAt(LocalDateTime.now());
+        invitationRepository.save(invitation);
         return mapEntityToDto(invitation);
     }
 
     @Override
-    public InvitationResponse resendInvitation(Long id) {
-        Invitation invitation=repository.findById(id)
-                .orElseThrow(()->new RuntimeException("Invitation not found with id: " + id));
-        //To-Do: Resend email logic here
+    public InvitationResponse resend(Long id) {
+        Invitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with id: " + id));
+        // TODO: Add email sending logic here
         return mapEntityToDto(invitation);
     }
 
     @Override
-    public InvitationResponse cancelInvitation(Long id) {
-        Invitation invitation=repository.findById(id)
-                .orElseThrow(()->new RuntimeException("Invitation not found with id: " + id));
+    public InvitationResponse cancel(Long id) {
+        Invitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with id: " + id));
         invitation.setStatus(InvitationStatus.CANCELED);
-        repository.save(invitation);
-
+        invitationRepository.save(invitation);
         return mapEntityToDto(invitation);
     }
 
     @Override
-    public InvitationResponse sendInvitation(InvitationRequest request) {
+    public InvitationResponse send(InvitationRequest request) {
+        User sender = userRepository.findById(request.getSenderId())
+                .orElseThrow(() -> new RuntimeException("Sender not found with id: " + request.getSenderId()));
 
-        Invitation invitation=mapDtoToEntity(request);
-        //To-Do: Send email logic here
-        repository.save(invitation);
+        Family family = familyRepository.findById(request.getFamilyId())
+                .orElseThrow(() -> new RuntimeException("Family not found with id: " + request.getFamilyId()));
+
+        Invitation invitation = Invitation.builder()
+                .sender(sender)
+                .family(family)
+                .recipientEmail(request.getRecipientEmail())
+                .status(InvitationStatus.PENDING)
+                .sentAt(LocalDateTime.now())
+                .build();
+
+        invitationRepository.save(invitation);
         return mapEntityToDto(invitation);
     }
 
     @Override
-    public InvitationResponse updateInvitation(Long id, InvitationRequest request) {
-        Invitation invitation=repository.findById(id)
-                .orElseThrow(()->new RuntimeException("Invitation not found with id: " + id));
-        if(request.getRecipientEmail()!=null){
+    public InvitationResponse update(Long id, InvitationRequest request) {
+        Invitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found with id: " + id));
+
+        if (request.getRecipientEmail() != null) {
             invitation.setRecipientEmail(request.getRecipientEmail());
         }
-        if (request.getFamilyId()!=null){
-            invitation.setFamilyId(request.getFamilyId());
+
+        if (request.getSenderId() != null) {
+            User sender = userRepository.findById(request.getSenderId())
+                    .orElseThrow(() -> new RuntimeException("Sender not found with id: " + request.getSenderId()));
+            invitation.setSender(sender);
         }
-        if (request.getSenderId()!=null){
-            invitation.setSenderId(request.getSenderId());
+
+        if (request.getFamilyId() != null) {
+            Family family = familyRepository.findById(request.getFamilyId())
+                    .orElseThrow(() -> new RuntimeException("Family not found with id: " + request.getFamilyId()));
+            invitation.setFamily(family);
         }
-        repository.save(invitation);
+
+        invitationRepository.save(invitation);
         return mapEntityToDto(invitation);
     }
 
@@ -113,16 +143,5 @@ public class InvitationServiceImpl implements InvitationService {
                 .status(invitation.getStatus())
                 .respondedAt(invitation.getRespondedAt())
                 .build();
-    }
-
-    private Invitation mapDtoToEntity(InvitationRequest request) {
-        return Invitation.builder()
-                .recipientEmail(request.getRecipientEmail())
-                .familyId(request.getFamilyId())
-                .senderId(request.getSenderId())
-                .status(InvitationStatus.PENDING)
-                .sentAt(LocalDateTime.now())
-                .build();
-
     }
 }

@@ -4,10 +4,10 @@ import com.example.portfolio.DTOs.family.FamilyCreateRequest;
 import com.example.portfolio.DTOs.family.FamilyResponse;
 
 public interface FamilyService {
-    FamilyResponse createFamily(FamilyCreateRequest familyRequest);
-    FamilyResponse getFamily(Long id);
-    FamilyResponse updateFamily(Long id, FamilyCreateRequest familyRequest);
-    void deleteFamily(Long id);
+    FamilyResponse create(FamilyCreateRequest familyRequest);
+    FamilyResponse get(Long id);
+    FamilyResponse update(Long id, FamilyCreateRequest familyRequest);
+    void delete(Long id);
     FamilyResponse getFamilyByUserId(Long userId);
 
 }
